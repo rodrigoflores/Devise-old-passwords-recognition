@@ -40,3 +40,4 @@ gem 'jquery-rails'
 gem "capybara", :group => [:development, :test]
 gem "devise"
 gem "rspec-rails", ">= 2.0.1", :group => [:development, :test]
+gem "launchy"
