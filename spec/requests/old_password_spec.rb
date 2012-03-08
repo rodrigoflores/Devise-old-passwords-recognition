@@ -14,8 +14,6 @@ feature "Old password recognition" do
 
     click_button "Sign in"
 
-    save_and_open_page
-
     page.should have_content("You are using a password that has been changed")
   end
 end
