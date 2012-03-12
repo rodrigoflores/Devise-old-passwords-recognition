@@ -7,27 +7,13 @@ class User < ActiveRecord::Base
   has_many :passwords
   after_save :save_password
 
-  def current_encrypted_password
-    passwords.current.first
-  end
-
-  def encrypted_password
-    current_encrypted_password.encrypted_password
-  end
-
   def password=(new_password)
     @password = new_password
     @new_encrypted_password = password_digest(@password) if @password.present?
   end
 
-  def save_password
-    if @new_encrypted_password
-      if passwords.size > 0
-        current_encrypted_password.update_attributes(:changed_at => Time.now)
-      end
-
-      passwords.create!(:encrypted_password => @new_encrypted_password)
-    end
+  def encrypted_password
+    current_encrypted_password.encrypted_password
   end
 
   def old_password?(password)
@@ -43,4 +29,20 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
+
+  private
+
+  def current_encrypted_password
+    passwords.current.first
+  end
+
+ def save_password
+    if @new_encrypted_password
+      if passwords.size > 0
+        current_encrypted_password.update_attributes(:changed_at => Time.now)
+      end
+
+      passwords.create!(:encrypted_password => @new_encrypted_password)
+    end
+  end
 end
