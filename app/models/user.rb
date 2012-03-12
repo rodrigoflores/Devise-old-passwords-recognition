@@ -33,8 +33,7 @@ class User < ActiveRecord::Base
   def old_password?(password)
     passwords.each do |old_password|
       return false if encrypted_password.blank?
-      password = Devise::Encryptors::BCrypt.digest(password, extract_salt_from_encrypted_password(encrypted_password), self.class.stretches, self.class.pepper)
-      Devise.secure_compare(password, self.encrypted_password)
+      Devise::Encryptors::BCrypt.compare(old_password.encrypted_password, password, self.class.stretches, nil, self.class.pepper)
     end
   end
 
