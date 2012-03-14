@@ -1,0 +1,4 @@
+en:
+  devise:
+    failure:
+      old_password: "You are using a password that has been changed"

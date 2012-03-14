@@ -19,6 +19,10 @@ class User < ActiveRecord::Base
     false
   end
 
+  def unauthenticated_message
+    :old_password
+  end
+
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
 
