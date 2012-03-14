@@ -13,9 +13,13 @@ describe User do
   end
 
   describe "callbacks" do
-    it "adds the encrypted password on passwords table" do
+    it "adds the old encrypted password to the passwords table" do
       expect {
-        User.create!(:email => "a@b.com", :password => "oldpassword")
+        user = User.new(:email => "a@b.com", :password => "oldpassword")
+        user.save!
+
+        user.password = "newpassword"
+        user.save!
       }.to change(Password, :count).by(1)
     end
   end
