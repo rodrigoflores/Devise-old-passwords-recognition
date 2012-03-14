@@ -38,6 +38,6 @@ gem 'jquery-rails'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem "capybara", :group => [:development, :test]
-gem "devise"
+gem "devise", :git => "git://github.com/plataformatec/devise.git"
 gem "rspec-rails", ">= 2.0.1", :group => [:development, :test]
 gem "launchy"
