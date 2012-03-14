@@ -4,27 +4,19 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_many :passwords
-  after_save :save_password
+  has_many :old_passwords, :class_name => "Password"
+  after_save :store_old_password
 
   def password=(new_password)
-    @password = new_password
-    @new_encrypted_password = password_digest(@password) if @password.present?
-  end
-
-  def encrypted_password
-    current_encrypted_password.encrypted_password
+    @old_encrypted_password = self.encrypted_password if @password.present?
+    super(new_password)
   end
 
   def old_password?(password)
-    passwords.each do |old_password|
-      return false if encrypted_password.blank?
-      Devise::Encryptors::BCrypt.compare(old_password.encrypted_password, password, self.class.stretches, nil, self.class.pepper)
+    old_passwords.each do |old_password|
+      return true if self.encryptor_class.compare(old_password.encrypted_password, password, self.class.stretches, nil, self.class.pepper)
     end
-  end
-
-  def extract_salt_from_encrypted_password(encrypted_password)
-    ::BCrypt::Password.new(self.encrypted_password).salt
+    false
   end
 
   # Setup accessible (or protected) attributes for your model
@@ -32,17 +24,9 @@ class User < ActiveRecord::Base
 
   private
 
-  def current_encrypted_password
-    passwords.current.first
-  end
-
- def save_password
-    if @new_encrypted_password
-      if passwords.size > 0
-        current_encrypted_password.update_attributes(:changed_at => Time.now)
-      end
-
-      passwords.create!(:encrypted_password => @new_encrypted_password)
+  def store_old_password
+    if @old_encrypted_password
+      old_passwords.create!(:encrypted_password => @old_encrypted_password, :changed_at => self.updated_at)
     end
   end
 end
