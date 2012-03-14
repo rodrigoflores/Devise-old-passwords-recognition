@@ -13,14 +13,18 @@ class User < ActiveRecord::Base
   end
 
   def old_password?(password)
-    old_passwords.each do |old_password|
-      return true if self.encryptor_class.compare(old_password.encrypted_password, password, self.class.stretches, nil, self.class.pepper)
+    old_passwords.any? do |old_password|
+      self.encryptor_class.compare(old_password.encrypted_password, password, self.class.stretches, nil, self.class.pepper)
     end
-    false
+  end
+
+  def valid_password?(password)
+    @attempted_password = password
+    super(@attempted_password)
   end
 
   def unauthenticated_message
-    :old_password
+    @attempted_password && old_password?(@attempted_password) ? :old_password : super
   end
 
   # Setup accessible (or protected) attributes for your model
